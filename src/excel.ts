@@ -20,6 +20,11 @@ export class Excel {
   private fileName = "excel";
 
   /**
+   * export excel suffix
+   */
+  private suffix: string = "xlsx";
+
+  /**
    * temporarily file name
    */
   private fileNameTmp = "";
@@ -48,11 +53,6 @@ export class Excel {
   private wsIndex: number = 0;
 
   /**
-   * export excel suffix
-   */
-  private suffix: string = ".xlsx";
-
-  /**
    * row column map
    */
   private rowColumnMap: { [key: string]: RowColumnItem } = {};
@@ -78,7 +78,7 @@ export class Excel {
    * @param sheetName
    * @returns
    */
-  addWorkSheet(sheetName: string): this {
+  addWorkSheet(sheetName: string, options: any = {}): this {
     const initRowColumnItem: RowColumnItem = {
       row: 1,
       column: 1,
@@ -87,7 +87,7 @@ export class Excel {
       depthMap: {},
       depth: 1,
     };
-    const ws = this.wb.addWorksheet(sheetName);
+    const ws = this.wb.addWorksheet(sheetName, options);
     this.ws = ws;
     this.wsList.push(ws);
     this.wsIndex = this.wsList.length - 1;
@@ -291,7 +291,7 @@ export class Excel {
    * save as excel file
    */
   async saveFile() {
-    this.fileNameTmp = this.fileName + createRandomStr(15) + this.suffix;
+    this.fileNameTmp = this.fileName + createRandomStr(15) + "." + this.suffix;
     const filePath = path.join(this.path, this.fileNameTmp);
     await this.writeExcel(filePath);
   }
@@ -344,7 +344,7 @@ export class Excel {
     if (!data) this.setText(row, column, "no image");
     const res = await this.http.get(data, { responseType: "arraybuffer" });
 
-    fs.writeFileSync("./xxx.png", res.data);
+    fs.writeFileSync(this.path + "/xxx.png", res.data);
 
     const from = {
       row,
@@ -365,8 +365,6 @@ export class Excel {
 
     console.log("from", from);
     console.log("to", to);
-
-    console.log("res", res.data);
 
     try {
       this.ws.row(row).setHeight(100);
@@ -409,5 +407,26 @@ export class Excel {
     try {
       fs.unlinkSync(filePath);
     } catch (error) {}
+  }
+
+  /**
+   * set http context header for export excel
+   * @param ctx
+   */
+  setCtxHeader(ctx: any) {
+    const ua = (ctx.req.headers["user-agent"] || "").toLowerCase();
+    let fileName = encodeURIComponent(this.fileName + "." + this.suffix);
+    if (ua.indexOf("msie") >= 0 || ua.indexOf("chrome") >= 0) {
+      ctx.set("Content-Disposition", `attachment; filename=${fileName}`);
+    } else if (ua.indexOf("firefox") >= 0) {
+      ctx.set("Content-Disposition", `attachment; filename*=${fileName}`);
+    } else {
+      ctx.set(
+        "Content-Disposition",
+        `attachment; filename=${Buffer.from(
+          this.fileName + "." + this.suffix
+        ).toString("binary")}`
+      );
+    }
   }
 }

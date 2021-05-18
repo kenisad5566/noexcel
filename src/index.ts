@@ -34,7 +34,7 @@ async function test() {
   await excel
     .addWorkSheet("test")
     .setFileName("tttt")
-    .setPath(".")
+    .setPath("./tmp")
     .render(data);
 
   await excel.saveFile();

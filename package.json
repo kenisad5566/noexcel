@@ -9,6 +9,7 @@
     "types"
   ],
   "scripts": {
+    "dev" : "ts-node ./src/index.ts",
     "build": "tsc && node ./dist/index.js",
     "test": "npm run test "
   },
