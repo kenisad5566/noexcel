@@ -9,9 +9,14 @@
     "types"
   ],
   "scripts": {
-    "dev" : "ts-node ./src/index.ts",
+    "dev": "ts-node ./src/index.ts",
     "build": "tsc && node ./dist/index.js",
     "test": "npm run test "
+  },
+    "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   },
   "repository": {
     "type": "git",
@@ -32,6 +37,7 @@
     "@types/lodash": "^4.14.169",
     "@types/node": "^15.3.0",
     "@types/node-xlsx": "^0.15.1",
+    "husky": "^6.0.0",
     "ts-loader": "^9.1.2"
   },
   "dependencies": {

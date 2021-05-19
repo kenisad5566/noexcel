@@ -24,6 +24,8 @@ export class Excel {
    */
   private suffix: string = "xlsx";
 
+  private filePath: string = "";
+
   /**
    * temporarily file name
    */
@@ -111,27 +113,6 @@ export class Excel {
   }
 
   /**
-   * {type:"text/image/number", text:"内容"}
-   * simple excel
-   * @param data
-   */
-  async simpleRender(data: Cell[][]): Promise<this> {
-    let row = 1;
-    for (const index1 in data) {
-      const objects = data[index1];
-      for (const index2 in objects) {
-        const { text, type } = objects[index2];
-        const column = Number(index2 + 1);
-        if (type === CellType.number || type === CellType.text)
-          this.setText(row, column, text);
-        if (type === CellType.image) await this.setImage(text, row, column);
-      }
-      row++;
-    }
-    return this;
-  }
-
-  /**
    *
    * cell data
    * @param data
@@ -145,7 +126,7 @@ export class Excel {
         this.currentRowColumnItem.initRow = this.currentRowColumnItem.row;
         this.currentRowColumnItem.initCol = this.currentRowColumnItem.column;
 
-        this.renderCell(cell);
+        await this.renderCell(cell);
         this.currentRowColumnItem.column =
           this.currentRowColumnItem.initCol + cell["colSpan"];
         this.currentRowColumnItem.row = this.currentRowColumnItem.initRow;
@@ -160,8 +141,8 @@ export class Excel {
     return this;
   }
 
-  private async renderCell(cell: any) {
-    const { data = [], colSpan, rowSpan } = cell;
+  private async renderCell(cell: Cell) {
+    const { childCells = [], colSpan = 1, rowSpan = 1 } = cell;
     this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth] = {
       row: this.currentRowColumnItem.row,
       column: this.currentRowColumnItem.column,
@@ -174,18 +155,17 @@ export class Excel {
         " site ",
         this.currentRowColumnItem.row,
         this.currentRowColumnItem.column,
+        cell["type"],
         cell["text"]
       );
-    if (this.debug)
-      console.log("this.depth", this.currentRowColumnItem.depthMap);
 
-    this.setCellValue(cell);
-    if (data.length) {
+    await this.setCellValue(cell);
+    if (childCells.length) {
       this.currentRowColumnItem.row =
         this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth].row;
       this.currentRowColumnItem.depth++;
 
-      for (const cells of data) {
+      for (const cells of childCells) {
         this.currentRowColumnItem.column =
           this.currentRowColumnItem.depthMap[
             this.currentRowColumnItem.depth - 1
@@ -197,7 +177,7 @@ export class Excel {
           if (!cell["rowSpan"]) cell["rowSpan"] = 1;
           if (!cell["colSpan"]) cell["colSpan"] = 1;
           this.currentRowColumnItem.column++;
-          this.renderCell(cell);
+          await this.renderCell(cell);
           maxRowSpan = Math.max(maxRowSpan, cell["rowSpan"]);
         }
         if (this.debug) console.log("maxRowSpan", maxRowSpan);
@@ -220,8 +200,14 @@ export class Excel {
    * set a cell value
    * @param cell
    */
-  private setCellValue(cell: Cell) {
-    const { text, rowSpan = 1, colSpan = 1, type = CellType.text } = cell;
+  private async setCellValue(cell: Cell) {
+    const {
+      text,
+      rowSpan = 1,
+      colSpan = 1,
+      type = CellType.string,
+      style = {},
+    } = cell;
 
     const rowEnd =
       rowSpan > 1
@@ -232,24 +218,70 @@ export class Excel {
         ? this.currentRowColumnItem.column + colSpan - 1
         : this.currentRowColumnItem.column;
 
-    if (type === CellType.text || type === CellType.number)
-      this.ws
-        .cell(
+    switch (type) {
+      case CellType.string:
+        this.ws
+          .cell(
+            this.currentRowColumnItem.row,
+            this.currentRowColumnItem.column,
+            rowEnd,
+            colEnd,
+            true
+          )
+          .string(text)
+          .style(style);
+        break;
+
+      case CellType.image:
+        await this.setImage(
           this.currentRowColumnItem.row,
           this.currentRowColumnItem.column,
           rowEnd,
           colEnd,
-          true
-        )
-        .string(text.toString());
-    if (type === CellType.image)
-      this.setImage(
-        text,
-        this.currentRowColumnItem.row,
-        this.currentRowColumnItem.column,
-        rowEnd,
-        colEnd
-      );
+          text,
+          style
+        );
+        break;
+
+      case CellType.number:
+        this.ws
+          .cell(
+            this.currentRowColumnItem.row,
+            this.currentRowColumnItem.column,
+            rowEnd,
+            colEnd,
+            true
+          )
+          .number(text)
+          .style(style);
+        break;
+
+      case CellType.date:
+        this.ws
+          .cell(
+            this.currentRowColumnItem.row,
+            this.currentRowColumnItem.column,
+            rowEnd,
+            colEnd,
+            true
+          )
+          .date(text)
+          .style(style);
+        break;
+
+      case CellType.link:
+        this.ws
+          .cell(
+            this.currentRowColumnItem.row,
+            this.currentRowColumnItem.column,
+            rowEnd,
+            colEnd,
+            true
+          )
+          .link(text)
+          .style(style);
+        break;
+    }
 
     if (rowSpan > 1) this.currentRowColumnItem.row += rowSpan - 1;
     if (colSpan > 1) this.currentRowColumnItem.column += colSpan + 1;
@@ -275,34 +307,18 @@ export class Excel {
     return this;
   }
 
-  /**
-   * export as buffer, you can handler it with ctx to return to browser
-   * @returns
-   */
-  async exportAsBuffer() {
-    await this.saveFile();
-    const xlsx = await this.readAsBuffer();
-    this.removeFile();
-
-    return xlsx;
+  async generateXML() {
+    await this.wb._generateXML();
   }
 
   /**
    * save as excel file
    */
-  async saveFile() {
+  async saveFile(): Promise<string> {
     this.fileNameTmp = this.fileName + createRandomStr(15) + "." + this.suffix;
-    const filePath = path.join(this.path, this.fileNameTmp);
-    await this.writeExcel(filePath);
-  }
-
-  /**
-   * read as buffer
-   * @returns
-   */
-  async readAsBuffer(): Promise<Buffer> {
-    const filePath = path.join(this.path, this.fileNameTmp);
-    return await fs.readFileSync(filePath);
+    this.filePath = path.join(this.path, this.fileNameTmp);
+    await this.writeFile();
+    return this.filePath;
   }
 
   /**
@@ -319,32 +335,22 @@ export class Excel {
   }
 
   /**
-   * set cell text value
-   * @param row
-   * @param column
-   * @param data
-   */
-  private setText(row: number, column: number, data: string) {
-    this.ws.cell(row, column).string(data);
-  }
-
-  /**
    * set cell image
    * @param row
    * @param column
    * @param data
    */
   private async setImage(
-    data: string,
     row: number,
     column: number,
-    rowEnd: number = 0,
-    colEnd: number = 0
+    rowEnd: number,
+    colEnd: number,
+    data: string,
+    style: any
   ) {
-    if (!data) this.setText(row, column, "no image");
+    if (!data)
+      this.ws.cell(row, column, rowEnd, colEnd, true).string(data).style(style);
     const res = await this.http.get(data, { responseType: "arraybuffer" });
-
-    fs.writeFileSync(this.path + "/xxx.png", res.data);
 
     const from = {
       row,
@@ -356,33 +362,31 @@ export class Excel {
     const to =
       rowEnd && colEnd
         ? {
-            row: rowEnd,
-            col: colEnd,
+            row: rowEnd + 1,
+            col: colEnd + 1,
             colOff: "0.1in",
             rowOff: 0,
           }
         : from;
 
-    console.log("from", from);
-    console.log("to", to);
-
     try {
-      this.ws.row(row).setHeight(100);
-      console.log("222");
-
+      this.ws.cell(row, column, rowEnd, colEnd, true).style(style);
       this.ws.addImage({
         image: res.data,
         type: "picture",
         position: {
           type: "oneCellAnchor",
           from,
-          // to,
+          to,
         },
       });
-      console.log("333");
     } catch (error) {
-      console.log("error", error);
+      throw error;
     }
+  }
+
+  public writeToBuffer(): Buffer {
+    return this.wb.writeToBuffer();
   }
 
   /**
@@ -390,9 +394,9 @@ export class Excel {
    * @param filePath
    * @returns
    */
-  private async writeExcel(filePath: string): Promise<boolean> {
+  private async writeFile(): Promise<boolean> {
     return await new Promise((resolver, reject) => {
-      this.wb.write(filePath, function (error: any) {
+      this.wb.write(this.filePath, function (error: any) {
         if (error) reject(error);
         resolver(true);
       });
@@ -402,10 +406,9 @@ export class Excel {
   /**
    * remove the temporarily excel file
    */
-  private removeFile() {
-    const filePath = path.join(this.path, this.fileNameTmp);
+  public removeFile() {
     try {
-      fs.unlinkSync(filePath);
+      fs.unlinkSync(this.filePath);
     } catch (error) {}
   }
 

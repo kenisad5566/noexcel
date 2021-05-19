@@ -1,15 +1,20 @@
+export interface CellStyle {}
+
 export interface Cell {
   text: string;
   type?: CellType;
   rowSpan?: number;
   colSpan?: number;
-  data?: Cell[];
+  style?: CellStyle;
+  childCells?: Cell[][];
 }
 
 export enum CellType {
   number = "number",
-  text = "text",
+  string = "string",
   image = "image",
+  date = "date",
+  link = "link",
 }
 
 export interface Depth {
