@@ -96,9 +96,8 @@ export class Excel {
       depthMap: {},
       depth: 1,
     };
-    const ws = this.wb.addWorksheet(sheetName, options);
-    this.ws = ws;
-    this.wsList.push(ws);
+    this.ws = this.wb.addWorksheet(sheetName, options);
+    this.wsList.push(this.ws);
     this.wsIndex = this.wsList.length - 1;
     this.rowColumnMap[this.wsIndex] = initRowColumnItem;
     this.currentRowColumnItem = initRowColumnItem;
@@ -314,8 +313,28 @@ export class Excel {
     return this;
   }
 
-  async generateXML() {
-    await this.wb._generateXML();
+  setRowHeight(row: number, height: number) {
+    this.ws.row(row).setHeight(height);
+  }
+
+  setColWidth(col: number, width: number) {
+    this.ws.row(col).setHeight(width);
+  }
+
+  setRowFreeze(rowNumber: number, autoScrollTo: number = 0) {
+    this.ws.row(rowNumber).freeze(autoScrollTo);
+  }
+
+  setColFreeze(colNumber: number, auToScrollTo: number = 0) {
+    this.ws.column(colNumber).freeze(auToScrollTo);
+  }
+
+  setRowHide(row: number) {
+    this.ws.row(row).hide();
+  }
+
+  setColHide(col: number) {
+    this.ws.column(col).hide();
   }
 
   /**

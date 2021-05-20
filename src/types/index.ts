@@ -64,9 +64,8 @@ export interface CellStyle {
     outline?: boolean;
   };
   fill?: {
-    // §18.8.20 fill (Fill)
     type?: string; // Currently only 'pattern' is implemented. Non-implemented option is 'gradient'
-    patternType?: string; //§18.18.55 ST_PatternType (Pattern Type)
+    patternType?: string; //§18.18.55 ST_PatternType (Pattern Type) see https://github.com/natergj/excel4node/blob/master/source/lib/types/fillPattern.js
     bgColor?: string; // HTML style hex value. defaults to black
     fgColor?: string; // HTML style hex value. defaults to black.
   };
@@ -76,7 +75,23 @@ export interface CellStyle {
 export interface WorkBookOpts {
   debug?: boolean;
   jszip?: { compression: "DEFLATE" | string };
-  defaultFont?: any;
+  defaultFont?: {
+    bold?: boolean;
+    charset?: number;
+    color?: string;
+    condense?: boolean;
+    extend?: boolean;
+    family?: string;
+    italics?: boolean;
+    name?: string;
+    outline?: boolean;
+    scheme?: string; // §18.18.33 ST_FontScheme (Font scheme Styles)
+    shadow?: boolean;
+    strike?: boolean;
+    size?: number;
+    underline?: boolean;
+    vertAlign?: string; // §22.9.2.17 ST_VerticalAlignRun (Vertical Positioning Location)
+  };
   dateFormat?: string;
   workbookView?: {
     activeTab?: number; // Specifies an unsignedInt that contains the index to the active sheet in this book view.

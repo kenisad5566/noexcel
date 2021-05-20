@@ -4,28 +4,65 @@ import { Cell } from "./types";
 const data = [
   [
     {
-      text: "https://pic4.zhimg.com/80/v2-e033acbeacba3cd43e4874b1fa34afc8_720w.jpg",
+      text: "c",
       type: "string",
-      rowSpan: 2,
-      childCells: [[{ text: "a" }], [{ text: "b" }]],
+    },
+    {
+      text: "c",
+      type: "string",
+    },
+    {
+      text: "c",
+      type: "string",
+    },
+    {
+      text: "c",
+      type: "string",
+    },
+    {
+      text: "c",
+      type: "string",
+    },
+  ],
+  [
+    {
+      text: "a",
       style: {
-        font: {
-          bold: true,
-          underline: true,
-        },
+        font: { color: "red", size: 20 },
+      },
+    },
+    {
+      text: "a",
+      style: {
+        font: { color: "red", size: 20 },
+      },
+    },
+    {
+      text: "a",
+      style: {
+        font: { color: "red", size: 20 },
+      },
+    },
+    {
+      text: "a",
+      style: {
+        font: { color: "red", size: 20 },
       },
     },
   ],
+  [{ text: "b" }, { text: "b" }, { text: "b" }, { text: "b" }, { text: "b" }],
 ] as Cell[][];
 
 async function test() {
-  const excel = new Excel({ debug: true });
+  const excel = new Excel({});
 
   await excel
-    .addWorkSheet("test")
+    .addWorkSheet("test", {})
     .setFileName("tttt")
     .setPath("./tmp")
     .render(data);
+
+  excel.setColHide(1);
 
   await excel.saveFile();
 }
