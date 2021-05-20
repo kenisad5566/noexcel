@@ -1,17 +1,13 @@
 import axios from "axios";
 
 /**
- * 发送请求
+ * send http request
  */
 export class Http {
   private config = {
     timeout: 5000,
   };
 
-  /**
-   * 发送get请求
-   * @param url
-   */
   async get(url: string, config = {}) {
     try {
       return await axios.get(url, { ...this.config, ...config });

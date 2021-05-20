@@ -10,42 +10,40 @@ const types_1 = require("./types");
 const fs = require("fs");
 const path = require("path");
 class Excel {
-    constructor(debug = false) {
+    constructor(options = {}) {
         /**
-         * save dir name
+         * file save path
          */
-        this.dir = "public";
+        this.path = path.join(__dirname, "public");
+        /**
+         * file name
+         */
+        this.fileName = "excel";
+        /**
+         * export excel suffix
+         */
+        this.suffix = "xlsx";
+        this.filePath = "";
+        /**
+         * temporarily file name
+         */
+        this.fileNameTmp = "";
         /**
          * workSheets
          */
         this.wsList = [];
         this.wsIndex = 0;
         /**
-         * export excel name
-         */
-        this.name = "excelName";
-        /**
-         * export excel suffix
-         */
-        this.suffix = ".xlsx";
-        /**
          * row column map
          */
         this.rowColumnMap = {};
         /**
-         * init row column item
+         * current row column item
          */
-        this.initRowColumnItem = {
-            row: 1,
-            column: 1,
-            initCol: 1,
-            initRow: 1,
-            depthMap: {},
-            depth: 1,
-        };
-        this.currentRowColumnItem = this.initRowColumnItem;
+        this.currentRowColumnItem = {};
+        const { debug = false } = options;
         this.http = new http_1.Http();
-        this.wb = new xl.Workbook();
+        this.wb = new xl.Workbook(options);
         this.debug = debug;
     }
     /**
@@ -53,13 +51,20 @@ class Excel {
      * @param sheetName
      * @returns
      */
-    addWorkSheet(sheetName) {
-        const ws = this.wb.addWorksheet(sheetName);
-        this.ws = ws;
-        this.wsList.push(ws);
+    addWorkSheet(sheetName, options = {}) {
+        const initRowColumnItem = {
+            row: 1,
+            column: 1,
+            initCol: 1,
+            initRow: 1,
+            depthMap: {},
+            depth: 1,
+        };
+        this.ws = this.wb.addWorksheet(sheetName, options);
+        this.wsList.push(this.ws);
         this.wsIndex = this.wsList.length - 1;
-        this.rowColumnMap[this.wsIndex] = this.initRowColumnItem;
-        this.currentRowColumnItem = this.initRowColumnItem;
+        this.rowColumnMap[this.wsIndex] = initRowColumnItem;
+        this.currentRowColumnItem = initRowColumnItem;
         return this;
     }
     /**
@@ -76,32 +81,11 @@ class Excel {
         return this;
     }
     /**
-     * {type:"text/image", data:"内容"}
-     * 简单的表格
+     *
+     * cell data
      * @param data
      */
-    async simpleRender(data) {
-        let row = 1;
-        for (const index1 in data) {
-            const objects = data[index1];
-            for (const index2 in objects) {
-                const { text, type } = objects[index2];
-                const column = Number(index2 + 1);
-                if (type === types_1.CellType.number || type === types_1.CellType.text)
-                    this.setText(row, column, text);
-                if (type === types_1.CellType.pic)
-                    await this.setImage(row, column, text);
-            }
-            row++;
-        }
-        return this;
-    }
-    /**
-     * {type:"text/image", data:"内容", colSpan:1, rowSpan:1}
-     * 简单的表格
-     * @param data
-     */
-    async renderData(data) {
+    async render(data) {
         for (const cells of data) {
             let maxRowSpan = 0;
             for (const cell of cells) {
@@ -111,7 +95,7 @@ class Excel {
                     cell["rowSpan"] = 1;
                 this.currentRowColumnItem.initRow = this.currentRowColumnItem.row;
                 this.currentRowColumnItem.initCol = this.currentRowColumnItem.column;
-                this.renderCellVertical(cell);
+                await this.renderCell(cell);
                 this.currentRowColumnItem.column =
                     this.currentRowColumnItem.initCol + cell["colSpan"];
                 this.currentRowColumnItem.row = this.currentRowColumnItem.initRow;
@@ -124,8 +108,8 @@ class Excel {
         }
         return this;
     }
-    async renderCellVertical(cell) {
-        const { data = [], colSpan, rowSpan } = cell;
+    async renderCell(cell) {
+        const { childCells = [], colSpan = 1, rowSpan = 1 } = cell;
         this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth] = {
             row: this.currentRowColumnItem.row,
             column: this.currentRowColumnItem.column,
@@ -133,17 +117,15 @@ class Excel {
             rowSpan,
         };
         if (this.debug)
-            console.log(" site ", this.currentRowColumnItem.row, this.currentRowColumnItem.column, cell["text"]);
-        if (this.debug)
-            console.log("this.depth", this.currentRowColumnItem.depthMap);
-        this.setCellValue(cell);
-        if (data.length) {
+            console.log(" site ", this.currentRowColumnItem.row, this.currentRowColumnItem.column, cell["type"] || types_1.CellType.string, cell["text"]);
+        await this.setCellValue(cell);
+        if (childCells.length) {
             this.currentRowColumnItem.row =
-                this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth]["row"];
+                this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth].row;
             this.currentRowColumnItem.depth++;
-            for (const cells of data) {
+            for (const cells of childCells) {
                 this.currentRowColumnItem.column =
-                    this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth - 1]["column"] +
+                    this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth - 1].column +
                         colSpan -
                         1;
                 let maxRowSpan = 0;
@@ -153,7 +135,7 @@ class Excel {
                     if (!cell["colSpan"])
                         cell["colSpan"] = 1;
                     this.currentRowColumnItem.column++;
-                    this.renderCellVertical(cell);
+                    await this.renderCell(cell);
                     maxRowSpan = Math.max(maxRowSpan, cell["rowSpan"]);
                 }
                 if (this.debug)
@@ -163,84 +145,196 @@ class Excel {
             this.currentRowColumnItem.depth--;
         }
         this.currentRowColumnItem.row =
-            this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth]["row"];
+            this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth].row;
         this.currentRowColumnItem.column =
-            this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth]["column"];
+            this.currentRowColumnItem.depthMap[this.currentRowColumnItem.depth].column;
         return;
     }
-    setCellValue(cell) {
-        const { text, rowSpan, colSpan } = cell;
+    /**
+     * set a cell value
+     * @param cell
+     */
+    async setCellValue(cell) {
+        const { text, rowSpan = 1, colSpan = 1, type = types_1.CellType.string, style = {}, } = cell;
         const rowEnd = rowSpan > 1
             ? this.currentRowColumnItem.row + rowSpan - 1
             : this.currentRowColumnItem.row;
         const colEnd = colSpan > 1
             ? this.currentRowColumnItem.column + colSpan - 1
             : this.currentRowColumnItem.column;
-        this.ws
-            .cell(this.currentRowColumnItem.row, this.currentRowColumnItem.column, rowEnd, colEnd, true)
-            .string(text);
+        switch (type) {
+            case types_1.CellType.string:
+                this.ws
+                    .cell(this.currentRowColumnItem.row, this.currentRowColumnItem.column, rowEnd, colEnd, true)
+                    .string(text)
+                    .style(style);
+                break;
+            case types_1.CellType.image:
+                await this.setImage(this.currentRowColumnItem.row, this.currentRowColumnItem.column, rowEnd, colEnd, text, style);
+                break;
+            case types_1.CellType.number:
+                this.ws
+                    .cell(this.currentRowColumnItem.row, this.currentRowColumnItem.column, rowEnd, colEnd, true)
+                    .number(text)
+                    .style(style);
+                break;
+            case types_1.CellType.date:
+                this.ws
+                    .cell(this.currentRowColumnItem.row, this.currentRowColumnItem.column, rowEnd, colEnd, true)
+                    .date(text)
+                    .style(style);
+                break;
+            case types_1.CellType.link:
+                this.ws
+                    .cell(this.currentRowColumnItem.row, this.currentRowColumnItem.column, rowEnd, colEnd, true)
+                    .link(text)
+                    .style(style);
+                break;
+        }
         if (rowSpan > 1)
             this.currentRowColumnItem.row += rowSpan - 1;
         if (colSpan > 1)
             this.currentRowColumnItem.column += colSpan + 1;
     }
-    setName(name) {
-        this.name = name;
+    /**
+     * set this file name
+     * @param fileName
+     * @returns
+     */
+    setFileName(fileName) {
+        this.fileName = fileName;
         return this;
     }
-    async export() {
-        const pwd = process.cwd();
-        const filePath = path.join(pwd, this.dir, this.name + util_1.createRandomStr(10) + this.suffix);
-        await this.writeExcel(filePath);
-        const xlsx = await fs.readFileSync(filePath);
-        this.removeFile(filePath);
-        return xlsx;
+    /**
+     * set save path
+     * @param path
+     * @returns
+     */
+    setPath(path) {
+        this.path = path;
+        return this;
     }
+    setRowHeight(row, height) {
+        this.ws.row(row).setHeight(height);
+    }
+    setColWidth(col, width) {
+        this.ws.row(col).setHeight(width);
+    }
+    setRowFreeze(rowNumber, autoScrollTo = 0) {
+        this.ws.row(rowNumber).freeze(autoScrollTo);
+    }
+    setColFreeze(colNumber, auToScrollTo = 0) {
+        this.ws.column(colNumber).freeze(auToScrollTo);
+    }
+    setRowHide(row) {
+        this.ws.row(row).hide();
+    }
+    setColHide(col) {
+        this.ws.column(col).hide();
+    }
+    /**
+     * save as excel file
+     */
+    async saveFile() {
+        this.fileNameTmp = this.fileName + util_1.createRandomStr(15) + "." + this.suffix;
+        this.filePath = path.join(this.path, this.fileNameTmp);
+        await this.writeFile();
+        return this.filePath;
+    }
+    /**
+     * read a excel and parse to Array
+     * @param path
+     * @param sheetIndex
+     * @returns
+     */
     async readExcel(path, sheetIndex = 0) {
         const workSheets = node_xlsx_1.default.parse(path);
         const sheet = workSheets[sheetIndex];
         const data = sheet.data;
         return data;
     }
-    setText(row, column, data) {
-        this.ws.cell(row, column).string(data);
-    }
-    async setImage(row, column, data) {
+    /**
+     * set cell image
+     * @param row
+     * @param column
+     * @param data
+     */
+    async setImage(row, column, rowEnd, colEnd, data, style) {
         if (!data)
-            this.setText(row, column, "没有图片");
+            this.ws.cell(row, column, rowEnd, colEnd, true).string(data).style(style);
         const res = await this.http.get(data, { responseType: "arraybuffer" });
+        const from = {
+            row,
+            col: column,
+            colOff: "0.1in",
+            rowOff: 0,
+        };
+        const to = rowEnd && colEnd
+            ? {
+                row: rowEnd + 1,
+                col: colEnd + 1,
+                colOff: "0.1in",
+                rowOff: 0,
+            }
+            : from;
         try {
-            this.ws.row(row).setHeight(100);
+            this.ws.cell(row, column, rowEnd, colEnd, true).style(style);
             this.ws.addImage({
                 image: res.data,
                 type: "picture",
                 position: {
                     type: "oneCellAnchor",
-                    from: {
-                        row,
-                        col: column,
-                        colOff: "0.1in",
-                        rowOff: 0,
-                    },
+                    from,
+                    to,
                 },
             });
         }
-        catch (error) { }
+        catch (error) {
+            throw error;
+        }
     }
-    async writeExcel(filePath) {
+    writeToBuffer() {
+        return this.wb.writeToBuffer();
+    }
+    /**
+     * write to a excel file
+     * @param filePath
+     * @returns
+     */
+    async writeFile() {
         return await new Promise((resolver, reject) => {
-            this.wb.write(filePath, function (error) {
+            this.wb.write(this.filePath, function (error) {
                 if (error)
                     reject(error);
                 resolver(true);
             });
         });
     }
-    removeFile(filePath) {
-        fs.unlink(filePath, function (error) {
-            if (error)
-                console.log("error", error);
-        });
+    /**
+     * remove the temporarily excel file
+     */
+    removeFile() {
+        try {
+            fs.unlinkSync(this.filePath);
+        }
+        catch (error) { }
+    }
+    /**
+     * set http context header for export excel
+     * @param ctx
+     */
+    setCtxHeader(ctx) {
+        const ua = (ctx.req.headers["user-agent"] || "").toLowerCase();
+        let fileName = encodeURIComponent(this.fileName + "." + this.suffix);
+        if (ua.indexOf("msie") >= 0 || ua.indexOf("chrome") >= 0) {
+            ctx.set("Content-Disposition", `attachment; filename=${fileName}`);
+        }
+        else if (ua.indexOf("firefox") >= 0) {
+            ctx.set("Content-Disposition", `attachment; filename*=${fileName}`);
+        }
+        else {
+            ctx.set("Content-Disposition", `attachment; filename=${Buffer.from(this.fileName + "." + this.suffix).toString("binary")}`);
+        }
     }
 }
 exports.Excel = Excel;

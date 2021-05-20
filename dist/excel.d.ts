@@ -1,11 +1,26 @@
-import { Cell } from "./types";
+/// <reference types="node" />
+import { Cell, WorkBookOpts, WorkSheetStyle } from "./types";
 export declare class Excel {
     /**
-     * save dir name
+     * file save path
      */
-    private dir;
+    private path;
+    /**
+     * file name
+     */
+    private fileName;
+    /**
+     * export excel suffix
+     */
+    private suffix;
+    private filePath;
+    /**
+     * temporarily file name
+     */
+    private fileNameTmp;
     /**
      * http agent
+     * use for pic render
      */
     private http;
     /**
@@ -22,33 +37,24 @@ export declare class Excel {
     private wsList;
     private wsIndex;
     /**
-     * export excel name
-     */
-    private name;
-    /**
-     * export excel suffix
-     */
-    private suffix;
-    /**
      * row column map
      */
     private rowColumnMap;
     /**
-     * init row column item
+     * current row column item
      */
-    private initRowColumnItem;
     private currentRowColumnItem;
     /**
      * debug console.log some msg
      */
     private debug;
-    constructor(debug?: boolean);
+    constructor(options?: WorkBookOpts);
     /**
      * add a work sheet
      * @param sheetName
      * @returns
      */
-    addWorkSheet(sheetName: string): this;
+    addWorkSheet(sheetName: string, options?: WorkSheetStyle): this;
     /**
      * select a work sheet
      * @param index
@@ -56,24 +62,67 @@ export declare class Excel {
      */
     selectSheet(index: number): this;
     /**
-     * {type:"text/image", data:"内容"}
-     * 简单的表格
+     *
+     * cell data
      * @param data
      */
-    simpleRender(data: Cell[][]): Promise<this>;
+    render(data: Cell[][]): Promise<this>;
+    private renderCell;
     /**
-     * {type:"text/image", data:"内容", colSpan:1, rowSpan:1}
-     * 简单的表格
+     * set a cell value
+     * @param cell
+     */
+    private setCellValue;
+    /**
+     * set this file name
+     * @param fileName
+     * @returns
+     */
+    setFileName(fileName: string): this;
+    /**
+     * set save path
+     * @param path
+     * @returns
+     */
+    setPath(path: string): this;
+    setRowHeight(row: number, height: number): void;
+    setColWidth(col: number, width: number): void;
+    setRowFreeze(rowNumber: number, autoScrollTo?: number): void;
+    setColFreeze(colNumber: number, auToScrollTo?: number): void;
+    setRowHide(row: number): void;
+    setColHide(col: number): void;
+    /**
+     * save as excel file
+     */
+    saveFile(): Promise<string>;
+    /**
+     * read a excel and parse to Array
+     * @param path
+     * @param sheetIndex
+     * @returns
+     */
+    readExcel(path: string, sheetIndex?: number): Promise<unknown[][]>;
+    /**
+     * set cell image
+     * @param row
+     * @param column
      * @param data
      */
-    renderData(data: any[][]): Promise<this>;
-    private renderCellVertical;
-    private setCellValue;
-    setName(name: string): this;
-    export(): Promise<any>;
-    readExcel(path: string, sheetIndex?: number): Promise<unknown[][]>;
-    private setText;
     private setImage;
-    private writeExcel;
-    private removeFile;
+    writeToBuffer(): Buffer;
+    /**
+     * write to a excel file
+     * @param filePath
+     * @returns
+     */
+    private writeFile;
+    /**
+     * remove the temporarily excel file
+     */
+    removeFile(): void;
+    /**
+     * set http context header for export excel
+     * @param ctx
+     */
+    setCtxHeader(ctx: any): void;
 }

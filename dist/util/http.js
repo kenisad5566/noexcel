@@ -4,7 +4,7 @@ exports.Http = void 0;
 const tslib_1 = require("tslib");
 const axios_1 = tslib_1.__importDefault(require("axios"));
 /**
- * 发送请求
+ * send http request
  */
 class Http {
     constructor() {
@@ -12,10 +12,6 @@ class Http {
             timeout: 5000,
         };
     }
-    /**
-     * 发送get请求
-     * @param url
-     */
     async get(url, config = {}) {
         try {
             return await axios_1.default.get(url, Object.assign(Object.assign({}, this.config), config));

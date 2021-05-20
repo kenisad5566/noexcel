@@ -1,12 +1,74 @@
-import { Excel } from "../src/excel";
-import { Cell } from "";
+import Excel from "./../dist";
+import { Cell } from "./../dist/types";
 
-const data = [[{ text: "xxx" }]] as Cell[][];
+console.log("ddd", Excel);
 
-async function a() {
-  const excel = new Excel(true);
+const data = [
+  [
+    {
+      text: "c",
+      type: "string",
+    },
+    {
+      text: "c",
+      type: "string",
+    },
+    {
+      text: "c",
+      type: "string",
+    },
+    {
+      text: "c",
+      type: "string",
+    },
+    {
+      text: "c",
+      type: "string",
+    },
+  ],
+  [
+    {
+      text: "a",
+      style: {
+        font: { color: "red", size: 20 },
+      },
+    },
+    {
+      text: "a",
+      style: {
+        font: { color: "red", size: 20 },
+      },
+    },
+    {
+      text: "a",
+      style: {
+        font: { color: "red", size: 20 },
+      },
+    },
+    {
+      text: "a",
+      style: {
+        font: { color: "red", size: 20 },
+      },
+    },
+  ],
+  [{ text: "b" }, { text: "b" }, { text: "b" }, { text: "b" }, { text: "b" }],
+] as Cell[][];
 
-  (await excel.addWorkSheet("test").setName("tttt").renderData(data)).export();
+async function test() {
+  console.log("dd", Excel);
+
+  const excel = new Excel({ debug: true });
+
+  await excel
+    .addWorkSheet("test", {})
+    .setFileName("tttt")
+    .setPath("../tmp")
+    .render(data);
+
+  excel.setColHide(1);
+
+  await excel.saveFile();
 }
 
-a();
+test();
