@@ -3,7 +3,13 @@ import { createRandomStr } from "./util/util";
 
 const xl = require("excel4node");
 import xlsx from "node-xlsx";
-import { Cell, CellType, RowColumnItem } from "./types";
+import {
+  Cell,
+  CellType,
+  RowColumnItem,
+  WorkBookOpts,
+  WorkSheetStyle,
+} from "./types";
 
 const fs = require("fs");
 const path = require("path");
@@ -69,9 +75,10 @@ export class Excel {
    */
   private debug;
 
-  constructor(debug: boolean = false) {
+  constructor(options: WorkBookOpts = {}) {
+    const { debug = false } = options;
     this.http = new Http();
-    this.wb = new xl.Workbook();
+    this.wb = new xl.Workbook(options);
     this.debug = debug;
   }
 
@@ -80,7 +87,7 @@ export class Excel {
    * @param sheetName
    * @returns
    */
-  addWorkSheet(sheetName: string, options: any = {}): this {
+  addWorkSheet(sheetName: string, options: WorkSheetStyle = {}): this {
     const initRowColumnItem: RowColumnItem = {
       row: 1,
       column: 1,
@@ -155,7 +162,7 @@ export class Excel {
         " site ",
         this.currentRowColumnItem.row,
         this.currentRowColumnItem.column,
-        cell["type"],
+        cell["type"] || CellType.string,
         cell["text"]
       );
 
