@@ -1,7 +1,5 @@
 import { Http } from "./util/http";
 import { createRandomStr } from "./util/util";
-
-const xl = require("excel4node");
 import xlsx from "node-xlsx";
 import {
   Cell,
@@ -11,6 +9,7 @@ import {
   WorkSheetStyle,
 } from "./types";
 
+const xl = require("excel4node");
 const fs = require("fs");
 const path = require("path");
 
