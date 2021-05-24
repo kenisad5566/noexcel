@@ -268,8 +268,8 @@ export class Excel {
     }
   }
 
-  public writeToBuffer(): Buffer {
-    return this.wb.writeToBuffer();
+  public async writeToBuffer(): Promise<Buffer> {
+    return await this.wb.writeToBuffer();
   }
 
   /**
