@@ -27,7 +27,7 @@ export class Excel {
   /**
    * export excel suffix
    */
-  private suffix: string = "xlsx";
+  public suffix: string = "xlsx";
 
   private filePath: string = "";
 

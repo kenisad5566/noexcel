@@ -59,6 +59,20 @@ describe("#setFileName()", function () {
   });
 });
 
+describe("#setSuffix()", function () {
+  const excel = new Excel();
+  describe("it should be the right suffix when set suffix ", function () {
+    it(".xlsx", function () {
+      excel.setSuffix(".xlsx");
+      assert.equal(excel.suffix, ".xlsx");
+    });
+    it(".xls", function () {
+      excel.setSuffix(".xls");
+      assert.equal(excel.suffix, ".xls");
+    });
+  });
+});
+
 describe("#setSavePath()", function () {
   const excel = new Excel();
   const pathUtil = path.join(__dirname, "../src/util");
@@ -98,6 +112,133 @@ describe("#setColWidth()", function () {
       assert.equal(
         excel.ws.cols["1"].colWidth === 100 &&
           excel.ws.cols["1"].customWidth === true,
+        true
+      );
+    });
+  });
+});
+
+describe("#setRowHide()", function () {
+  const excel = new Excel();
+  excel.addWorkSheet("test1", { margins: { top: 1.2 } });
+  describe("it should hide row 1 when set row 1 hide", function () {
+    it("hide row 1", function () {
+      excel.setRowHide(1);
+      assert.equal(excel.ws.rows["1"].hidden === true, true);
+    });
+  });
+});
+
+describe("#setColHide()", function () {
+  const excel = new Excel();
+  excel.addWorkSheet("test1", { margins: { top: 1.2 } });
+  describe("it should hide col 1 when set col 1 hide", function () {
+    it("hide col 1", function () {
+      excel.setColHide(1);
+      assert.equal(excel.ws.cols["1"].hidden === true, true);
+    });
+  });
+});
+
+describe("#setRowFreeze()", function () {
+  const excel = new Excel();
+  excel.addWorkSheet("test1", { margins: { top: 1.2 } });
+  describe("it should freeze row 1 when set row 1 freeze", function () {
+    it("freeze row 1", function () {
+      excel.setRowFreeze(1);
+      assert.equal(
+        excel.ws.rows["1"].ws.opts.sheetView.pane.state === "frozen",
+        true
+      );
+    });
+  });
+});
+
+describe("#setColFreeze()", function () {
+  const excel = new Excel();
+  excel.addWorkSheet("test1", { margins: { top: 1.2 } });
+  describe("it should freeze col 1 when set col 1 freeze", function () {
+    it("freeze col 1", function () {
+      excel.setColFreeze(1);
+      assert.equal(
+        excel.ws.cols["1"].ws.opts.sheetView.pane.state === "frozen",
+        true
+      );
+    });
+  });
+});
+
+describe("#render()", function () {
+  const excel = new Excel();
+  excel.addWorkSheet("test1", { margins: { top: 1.2 } });
+  describe("it should render data right", function () {
+    it("simple data", async function () {
+      const data = [
+        [
+          {
+            text: "a",
+          },
+          {
+            text: "b",
+          },
+        ],
+        [
+          {
+            text: "c",
+          },
+          {
+            text: "d",
+          },
+        ],
+      ];
+
+      await excel.render(data);
+      const cells = excel.ws.cells;
+
+      assert.equal(
+        cells["A1"].v === 0 &&
+          cells["B1"].v === 1 &&
+          cells["A2"].v === 2 &&
+          cells["B2"].v === 3,
+        true
+      );
+    });
+  });
+});
+
+describe("#render()", function () {
+  const excel = new Excel();
+  excel.addWorkSheet("test1", { margins: { top: 1.2 } });
+  describe("it should render data right", function () {
+    it("complex data", async function () {
+      const data = [
+        [
+          {
+            text: "a",
+            rowSpan: 2,
+            childCells: [[{ text: "a1" }], [{ text: "a2" }]],
+          },
+        ],
+        [
+          {
+            text: "c",
+          },
+          {
+            text: "d",
+          },
+        ],
+      ];
+
+      await excel.render(data);
+      const cells = excel.ws.cells;
+
+      assert.equal(
+        cells["A1"].v === 0 &&
+          cells["A2"].v === null &&
+          cells["B1"].v === 1 &&
+          cells["B2"].v === 2 &&
+          cells["A3"].v === 3 &&
+          cells["B3"].v === 4,
         true
       );
     });
