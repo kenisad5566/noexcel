@@ -17,12 +17,12 @@ export class Excel {
   /**
    * file save path
    */
-  private path = path.join(__dirname, "public");
+  public path = path.join(__dirname, "public");
 
   /**
    * file name
    */
-  private fileName = "excel";
+  public fileName = "excel";
 
   /**
    * export excel suffix
@@ -50,14 +50,14 @@ export class Excel {
   /**
    * workSheet
    */
-  private ws: any;
+  public ws: any;
 
   /**
    * workSheets
    */
-  private wsList: any[] = [];
+  public wsList: any[] = [];
 
-  private wsIndex: number = 0;
+  public wsIndex: number = 0;
 
   /**
    * row column map
@@ -67,7 +67,7 @@ export class Excel {
   /**
    * current row column item
    */
-  private currentRowColumnItem: RowColumnItem = {} as any;
+  public currentRowColumnItem: RowColumnItem = {} as any;
 
   /**
    * debug console.log some msg
@@ -144,6 +144,176 @@ export class Excel {
     }
 
     return this;
+  }
+
+  /**
+   * set this file name
+   * @param fileName
+   * @returns
+   */
+  setFileName(fileName: string): this {
+    this.fileName = fileName;
+    return this;
+  }
+
+  /**
+   * set save path
+   * @param path
+   * @returns
+   */
+  setSavePath(path: string): this {
+    this.path = path;
+    return this;
+  }
+
+  setRowHeight(row: number, height: number) {
+    this.ws.row(row).setHeight(height);
+  }
+
+  setColWidth(col: number, width: number) {
+    this.ws.column(col).setWidth(width);
+  }
+
+  setRowFreeze(rowNumber: number, autoScrollTo: number = 0) {
+    this.ws.row(rowNumber).freeze(autoScrollTo);
+  }
+
+  setColFreeze(colNumber: number, auToScrollTo: number = 0) {
+    this.ws.column(colNumber).freeze(auToScrollTo);
+  }
+
+  setRowHide(row: number) {
+    this.ws.row(row).hide();
+  }
+
+  setColHide(col: number) {
+    this.ws.column(col).hide();
+  }
+
+  setSuffix(suffix: string) {
+    this.suffix = suffix;
+  }
+
+  /**
+   * save as excel file
+   */
+  async saveFile(): Promise<string> {
+    this.fileNameTmp = this.fileName + createRandomStr(15) + "." + this.suffix;
+    this.filePath = path.join(this.path, this.fileNameTmp);
+    await this.writeFile();
+    return this.filePath;
+  }
+
+  /**
+   * read a excel and parse to Array
+   * @param path
+   * @param sheetIndex
+   * @returns
+   */
+  async readExcel(path: string, sheetIndex = 0) {
+    const workSheets = xlsx.parse(path);
+    const sheet = workSheets[sheetIndex];
+    const data = sheet.data;
+    return data;
+  }
+
+  /**
+   * set cell image
+   * @param row
+   * @param column
+   * @param data
+   */
+  private async setImage(
+    row: number,
+    column: number,
+    rowEnd: number,
+    colEnd: number,
+    data: string,
+    style: any
+  ) {
+    if (!data)
+      this.ws.cell(row, column, rowEnd, colEnd, true).string(data).style(style);
+    const res = await this.http.get(data, { responseType: "arraybuffer" });
+
+    const from = {
+      row,
+      col: column,
+      colOff: "0.1in",
+      rowOff: 0,
+    };
+
+    const to =
+      rowEnd && colEnd
+        ? {
+            row: rowEnd + 1,
+            col: colEnd + 1,
+            colOff: "0.1in",
+            rowOff: 0,
+          }
+        : from;
+
+    try {
+      this.ws.cell(row, column, rowEnd, colEnd, true).style(style);
+      this.ws.addImage({
+        image: res.data,
+        type: "picture",
+        position: {
+          type: "oneCellAnchor",
+          from,
+          to,
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public writeToBuffer(): Buffer {
+    return this.wb.writeToBuffer();
+  }
+
+  /**
+   * remove the temporarily excel file
+   */
+  public removeFile() {
+    try {
+      fs.unlinkSync(this.filePath);
+    } catch (error) {}
+  }
+
+  /**
+   * set http context header for export excel
+   * @param ctx
+   */
+  setCtxHeader(ctx: any) {
+    const ua = (ctx.req.headers["user-agent"] || "").toLowerCase();
+    let fileName = encodeURIComponent(this.fileName + "." + this.suffix);
+    if (ua.indexOf("msie") >= 0 || ua.indexOf("chrome") >= 0) {
+      ctx.set("Content-Disposition", `attachment; filename=${fileName}`);
+    } else if (ua.indexOf("firefox") >= 0) {
+      ctx.set("Content-Disposition", `attachment; filename*=${fileName}`);
+    } else {
+      ctx.set(
+        "Content-Disposition",
+        `attachment; filename=${Buffer.from(
+          this.fileName + "." + this.suffix
+        ).toString("binary")}`
+      );
+    }
+  }
+
+  /**
+   * write to a excel file
+   * @param filePath
+   * @returns
+   */
+  private async writeFile(): Promise<boolean> {
+    return await new Promise((resolver, reject) => {
+      this.wb.write(this.filePath, function (error: any) {
+        if (error) reject(error);
+        resolver(true);
+      });
+    });
   }
 
   private async renderCell(cell: Cell) {
@@ -290,171 +460,5 @@ export class Excel {
 
     if (rowSpan > 1) this.currentRowColumnItem.row += rowSpan - 1;
     if (colSpan > 1) this.currentRowColumnItem.column += colSpan + 1;
-  }
-
-  /**
-   * set this file name
-   * @param fileName
-   * @returns
-   */
-  setFileName(fileName: string): this {
-    this.fileName = fileName;
-    return this;
-  }
-
-  /**
-   * set save path
-   * @param path
-   * @returns
-   */
-  setPath(path: string): this {
-    this.path = path;
-    return this;
-  }
-
-  setRowHeight(row: number, height: number) {
-    this.ws.row(row).setHeight(height);
-  }
-
-  setColWidth(col: number, width: number) {
-    this.ws.row(col).setHeight(width);
-  }
-
-  setRowFreeze(rowNumber: number, autoScrollTo: number = 0) {
-    this.ws.row(rowNumber).freeze(autoScrollTo);
-  }
-
-  setColFreeze(colNumber: number, auToScrollTo: number = 0) {
-    this.ws.column(colNumber).freeze(auToScrollTo);
-  }
-
-  setRowHide(row: number) {
-    this.ws.row(row).hide();
-  }
-
-  setColHide(col: number) {
-    this.ws.column(col).hide();
-  }
-
-  /**
-   * save as excel file
-   */
-  async saveFile(): Promise<string> {
-    this.fileNameTmp = this.fileName + createRandomStr(15) + "." + this.suffix;
-    this.filePath = path.join(this.path, this.fileNameTmp);
-    await this.writeFile();
-    return this.filePath;
-  }
-
-  /**
-   * read a excel and parse to Array
-   * @param path
-   * @param sheetIndex
-   * @returns
-   */
-  async readExcel(path: string, sheetIndex = 0) {
-    const workSheets = xlsx.parse(path);
-    const sheet = workSheets[sheetIndex];
-    const data = sheet.data;
-    return data;
-  }
-
-  /**
-   * set cell image
-   * @param row
-   * @param column
-   * @param data
-   */
-  private async setImage(
-    row: number,
-    column: number,
-    rowEnd: number,
-    colEnd: number,
-    data: string,
-    style: any
-  ) {
-    if (!data)
-      this.ws.cell(row, column, rowEnd, colEnd, true).string(data).style(style);
-    const res = await this.http.get(data, { responseType: "arraybuffer" });
-
-    const from = {
-      row,
-      col: column,
-      colOff: "0.1in",
-      rowOff: 0,
-    };
-
-    const to =
-      rowEnd && colEnd
-        ? {
-            row: rowEnd + 1,
-            col: colEnd + 1,
-            colOff: "0.1in",
-            rowOff: 0,
-          }
-        : from;
-
-    try {
-      this.ws.cell(row, column, rowEnd, colEnd, true).style(style);
-      this.ws.addImage({
-        image: res.data,
-        type: "picture",
-        position: {
-          type: "oneCellAnchor",
-          from,
-          to,
-        },
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  public writeToBuffer(): Buffer {
-    return this.wb.writeToBuffer();
-  }
-
-  /**
-   * write to a excel file
-   * @param filePath
-   * @returns
-   */
-  private async writeFile(): Promise<boolean> {
-    return await new Promise((resolver, reject) => {
-      this.wb.write(this.filePath, function (error: any) {
-        if (error) reject(error);
-        resolver(true);
-      });
-    });
-  }
-
-  /**
-   * remove the temporarily excel file
-   */
-  public removeFile() {
-    try {
-      fs.unlinkSync(this.filePath);
-    } catch (error) {}
-  }
-
-  /**
-   * set http context header for export excel
-   * @param ctx
-   */
-  setCtxHeader(ctx: any) {
-    const ua = (ctx.req.headers["user-agent"] || "").toLowerCase();
-    let fileName = encodeURIComponent(this.fileName + "." + this.suffix);
-    if (ua.indexOf("msie") >= 0 || ua.indexOf("chrome") >= 0) {
-      ctx.set("Content-Disposition", `attachment; filename=${fileName}`);
-    } else if (ua.indexOf("firefox") >= 0) {
-      ctx.set("Content-Disposition", `attachment; filename*=${fileName}`);
-    } else {
-      ctx.set(
-        "Content-Disposition",
-        `attachment; filename=${Buffer.from(
-          this.fileName + "." + this.suffix
-        ).toString("binary")}`
-      );
-    }
   }
 }
