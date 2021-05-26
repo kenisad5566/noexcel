@@ -1,18 +1,18 @@
 /// <reference types="node" />
-import { Cell, WorkBookOpts, WorkSheetStyle } from "./types";
+import { Cell, RowColumnItem, WorkBookOpts, WorkSheetStyle } from "./types";
 export declare class Excel {
     /**
      * file save path
      */
-    private path;
+    path: any;
     /**
      * file name
      */
-    private fileName;
+    fileName: string;
     /**
      * export excel suffix
      */
-    private suffix;
+    suffix: string;
     private filePath;
     /**
      * temporarily file name
@@ -30,12 +30,12 @@ export declare class Excel {
     /**
      * workSheet
      */
-    private ws;
+    ws: any;
     /**
      * workSheets
      */
-    private wsList;
-    private wsIndex;
+    wsList: any[];
+    wsIndex: number;
     /**
      * row column map
      */
@@ -43,7 +43,7 @@ export declare class Excel {
     /**
      * current row column item
      */
-    private currentRowColumnItem;
+    currentRowColumnItem: RowColumnItem;
     /**
      * debug console.log some msg
      */
@@ -67,12 +67,6 @@ export declare class Excel {
      * @param data
      */
     render(data: Cell[][]): Promise<this>;
-    private renderCell;
-    /**
-     * set a cell value
-     * @param cell
-     */
-    private setCellValue;
     /**
      * set this file name
      * @param fileName
@@ -84,13 +78,14 @@ export declare class Excel {
      * @param path
      * @returns
      */
-    setPath(path: string): this;
+    setSavePath(path: string): this;
     setRowHeight(row: number, height: number): void;
     setColWidth(col: number, width: number): void;
     setRowFreeze(rowNumber: number, autoScrollTo?: number): void;
     setColFreeze(colNumber: number, auToScrollTo?: number): void;
     setRowHide(row: number): void;
     setColHide(col: number): void;
+    setSuffix(suffix: string): void;
     /**
      * save as excel file
      */
@@ -109,13 +104,7 @@ export declare class Excel {
      * @param data
      */
     private setImage;
-    writeToBuffer(): Buffer;
-    /**
-     * write to a excel file
-     * @param filePath
-     * @returns
-     */
-    private writeFile;
+    writeToBuffer(): Promise<Buffer>;
     /**
      * remove the temporarily excel file
      */
@@ -125,4 +114,16 @@ export declare class Excel {
      * @param ctx
      */
     setCtxHeader(ctx: any): void;
+    /**
+     * write to a excel file
+     * @param filePath
+     * @returns
+     */
+    private writeFile;
+    private renderCell;
+    /**
+     * set a cell value
+     * @param cell
+     */
+    private setCellValue;
 }

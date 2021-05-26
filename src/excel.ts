@@ -166,32 +166,39 @@ export class Excel {
     return this;
   }
 
-  setRowHeight(row: number, height: number) {
+  setRowHeight(row: number, height: number): this {
     this.ws.row(row).setHeight(height);
+    return this;
   }
 
-  setColWidth(col: number, width: number) {
+  setColWidth(col: number, width: number): this {
     this.ws.column(col).setWidth(width);
+    return this;
   }
 
-  setRowFreeze(rowNumber: number, autoScrollTo: number = 0) {
+  setRowFreeze(rowNumber: number, autoScrollTo: number = 0): this {
     this.ws.row(rowNumber).freeze(autoScrollTo);
+    return this;
   }
 
-  setColFreeze(colNumber: number, auToScrollTo: number = 0) {
+  setColFreeze(colNumber: number, auToScrollTo: number = 0): this {
     this.ws.column(colNumber).freeze(auToScrollTo);
+    return this;
   }
 
-  setRowHide(row: number) {
+  setRowHide(row: number): this {
     this.ws.row(row).hide();
+    return this;
   }
 
-  setColHide(col: number) {
+  setColHide(col: number): this {
     this.ws.column(col).hide();
+    return this;
   }
 
-  setSuffix(suffix: string) {
+  setSuffix(suffix: string): this {
     this.suffix = suffix;
+    return this;
   }
 
   /**
@@ -376,7 +383,7 @@ export class Excel {
    * @param cell
    */
   private async setCellValue(cell: Cell) {
-    const {
+    let {
       text,
       rowSpan = 1,
       colSpan = 1,
@@ -392,6 +399,8 @@ export class Excel {
       colSpan > 1
         ? this.currentRowColumnItem.column + colSpan - 1
         : this.currentRowColumnItem.column;
+
+    if (typeof text === "number") type = CellType.number;
 
     switch (type) {
       case CellType.string:
