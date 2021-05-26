@@ -194,12 +194,13 @@ describe("#render()", function () {
 
       await excel.render(data);
       const cells = excel.ws.cells;
+      const strings = excel.ws.wb.sharedStrings;
 
       assert.equal(
-        cells["A1"].v === 0 &&
-          cells["B1"].v === 1 &&
-          cells["A2"].v === 2 &&
-          cells["B2"].v === 3,
+        cells["A1"].v === strings.indexOf("a") &&
+          cells["B1"].v === strings.indexOf("b") &&
+          cells["A2"].v === strings.indexOf("c") &&
+          cells["B2"].v === strings.indexOf("d"),
         true
       );
     });
@@ -231,14 +232,15 @@ describe("#render()", function () {
 
       await excel.render(data);
       const cells = excel.ws.cells;
+      const strings = excel.ws.wb.sharedStrings;
 
       assert.equal(
-        cells["A1"].v === 0 &&
+        cells["A1"].v === strings.indexOf("a") &&
           cells["A2"].v === null &&
-          cells["B1"].v === 1 &&
-          cells["B2"].v === 2 &&
-          cells["A3"].v === 3 &&
-          cells["B3"].v === 4,
+          cells["B1"].v === strings.indexOf("a1") &&
+          cells["B2"].v === strings.indexOf("a2") &&
+          cells["A3"].v === strings.indexOf("c") &&
+          cells["B3"].v === strings.indexOf("d"),
         true
       );
     });
