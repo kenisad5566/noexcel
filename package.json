@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "ts-node ./src/index.ts",
-    "build": "tsc && node ./dist/index.js",
+    "build": "tsc",
     "test": "./node_modules/.bin/mocha -r ./node_modules/ts-node/register test/**.test.ts"
   },
   "husky": {
