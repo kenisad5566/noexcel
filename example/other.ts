@@ -1,5 +1,5 @@
-import Excel from "../src/index";
-import { Cell } from "../src/types";
+import { NoExcel, Cell } from "../src/index";
+
 const path = require("path");
 
 async function exportFile() {
@@ -57,7 +57,7 @@ async function exportFile() {
     ],
   ] as Cell[][];
 
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet(sheetName).setSavePath(exportPath).setFileName(fileName);
   await excel.render(data);
   excel.setRowHeight(5, 300).setColWidth(6, 70);

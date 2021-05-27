@@ -1,3 +1,2 @@
-import { Excel } from "./excel";
-
-export default Excel;
+export { Excel as NoExcel } from "./excel";
+export * from "./types/index";

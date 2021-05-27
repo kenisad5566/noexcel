@@ -1,10 +1,10 @@
-import Excel from "../src/index";
+import { NoExcel } from "../src/index";
 var assert = require("assert");
 const path = require("path");
 const fs = require("fs");
 
 describe("#addWorkSheet()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet("test1", { margins: { top: 1.2 } });
   describe("should add a workSheet and named workSheet", function () {
     it("name is test", function () {
@@ -34,7 +34,7 @@ describe("#addWorkSheet()", function () {
 });
 
 describe("#selectSheet()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet("test1", { margins: { top: 1.2 } });
   excel.addWorkSheet("test2", { margins: { top: 1.2 } });
   describe("it should be thr right ws when select sheet", function () {
@@ -50,7 +50,7 @@ describe("#selectSheet()", function () {
 });
 
 describe("#setFileName()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   describe("it should be the myTest when set file name myTest", function () {
     it("index 0 is test1", function () {
       excel.setFileName("myTest");
@@ -60,7 +60,7 @@ describe("#setFileName()", function () {
 });
 
 describe("#setSuffix()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   describe("it should be the right suffix when set suffix ", function () {
     it(".xlsx", function () {
       excel.setSuffix(".xlsx");
@@ -74,7 +74,7 @@ describe("#setSuffix()", function () {
 });
 
 describe("#setSavePath()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   const pathUtil = path.join(__dirname, "../src/util");
   excel.setSavePath(pathUtil);
   describe("it should setSavePath right", function () {
@@ -89,7 +89,7 @@ describe("#setSavePath()", function () {
 });
 
 describe("#setRowHeight()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet("test1", { margins: { top: 1.2 } });
   describe("it should 100 when set row height 100", function () {
     it("set row height 100", function () {
@@ -104,7 +104,7 @@ describe("#setRowHeight()", function () {
 });
 
 describe("#setColWidth()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet("test1", { margins: { top: 1.2 } });
   describe("it should 100 when set col width 100", function () {
     it("set col width 100", function () {
@@ -119,7 +119,7 @@ describe("#setColWidth()", function () {
 });
 
 describe("#setRowHide()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet("test1", { margins: { top: 1.2 } });
   describe("it should hide row 1 when set row 1 hide", function () {
     it("hide row 1", function () {
@@ -130,7 +130,7 @@ describe("#setRowHide()", function () {
 });
 
 describe("#setColHide()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet("test1", { margins: { top: 1.2 } });
   describe("it should hide col 1 when set col 1 hide", function () {
     it("hide col 1", function () {
@@ -141,7 +141,7 @@ describe("#setColHide()", function () {
 });
 
 describe("#setRowFreeze()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet("test1", { margins: { top: 1.2 } });
   describe("it should freeze row 1 when set row 1 freeze", function () {
     it("freeze row 1", function () {
@@ -155,7 +155,7 @@ describe("#setRowFreeze()", function () {
 });
 
 describe("#setColFreeze()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet("test1", { margins: { top: 1.2 } });
   describe("it should freeze col 1 when set col 1 freeze", function () {
     it("freeze col 1", function () {
@@ -169,7 +169,7 @@ describe("#setColFreeze()", function () {
 });
 
 describe("#render()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet("test1", { margins: { top: 1.2 } });
   describe("it should render data right", function () {
     it("simple data", async function () {
@@ -208,7 +208,7 @@ describe("#render()", function () {
 });
 
 describe("#render()", function () {
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet("test1", { margins: { top: 1.2 } });
   describe("it should render data right", function () {
     it("complex data", async function () {

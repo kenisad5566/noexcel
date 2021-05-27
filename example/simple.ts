@@ -1,5 +1,4 @@
-import Excel from "../src/index";
-import { Cell } from "../src/types";
+import { NoExcel, Cell } from "../src/index";
 const path = require("path");
 
 async function exportFile() {
@@ -14,7 +13,7 @@ async function exportFile() {
     [{ text: "3" }, { text: "ai" }, { text: "14" }, { text: "supervisor" }],
   ] as Cell[][];
 
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet(sheetName).setSavePath(exportPath).setFileName(fileName);
   await excel.render(data);
   await excel.saveFile();
