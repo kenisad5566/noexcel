@@ -5,7 +5,7 @@
 # node-excel
 
 A full featured xlsx file generation library allowing for the creation of advanced Excel files without consideration of cell detail.
-With this module, you can export your excel easily only focus on your work and data. [!Some example](https://github.com/kenisad5566/node-excel/tree/master/example).
+With this module, you can export your excel easily only focus on your work and data. [Some example](https://github.com/kenisad5566/node-excel/tree/master/example).
 
 ### Basic Usage
 
@@ -455,7 +455,7 @@ excel.setRowHide(1, 1);
 excel.setColHide(1, 1);
 ```
 
-### save as file or read as buffer
+### Save as file or read as buffer
 
 It can be save as file or write to buffer
 
@@ -464,7 +464,7 @@ const filePath = await excel.saveFile(); // save file and return the file path
 const buffer = await excel.writeToBuffer(); // you can return this buffer to http.response, some it can be export by browser
 ```
 
-### parse excel file
+### Parse excel file
 
 It can also parse a excel file to array data
 
