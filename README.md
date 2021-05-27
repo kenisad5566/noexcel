@@ -52,6 +52,9 @@ await excel.saveFile()
 
 ### ColSpan
 
+A colspan excel example like this
+![image](https://github.com/kenisad5566/node-excel/blob/master/example/png/colSpan.png)
+
 ```javascript
  const exportPath = path.join(__dirname, "../tmp");
   const fileName = "test";
@@ -101,6 +104,9 @@ await excel.saveFile()
 
 ### RowSpan
 
+A rowspan excel example like this
+![image](https://github.com/kenisad5566/node-excel/blob/master/example/png/rowSpan.png)
+
 ```javascript
   const exportPath = path.join(__dirname, "../tmp");
   const fileName = "test";
@@ -135,6 +141,9 @@ await excel.saveFile()
 ```
 
 ### Cell style
+
+Some other example with cell style like this
+![image](https://github.com/kenisad5566/node-excel/blob/master/example/png/styles.png)
 
 ```javascript
   const exportPath = path.join(__dirname, "../tmp");
