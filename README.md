@@ -1,6 +1,5 @@
-[![NPM version](https://img.shields.io/npm/v/excel4node.svg)](https://www.npmjs.com/package/excel4node)
+[![NPM version 1.0.1](https://www.npmjs.com/package/noexcel)
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
-[![node](https://img.shields.io/node/v/excel4node.svg)](https://nodejs.org/en/download/)
 
 # node-excel
 
