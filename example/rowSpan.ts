@@ -8,20 +8,25 @@ async function exportFile() {
   const sheetName = "student";
 
   const data = [
-    [{ text: "班级" }, { text: "姓名" }, { text: "年龄" }, { text: "职位" }],
+    [
+      { text: "class" },
+      { text: "name" },
+      { text: "age" },
+      { text: "position" },
+    ],
     [
       {
-        text: "一年级",
+        text: "class one",
         rowSpan: 3,
         childCells: [
-          [{ text: "小明" }, { text: "15" }, { text: "班长" }],
-          [{ text: "小周" }, { text: "15" }, { text: "学习委员" }],
-          [{ text: "小朋" }, { text: "15" }, { text: "组长" }],
+          [{ text: "ming" }, { text: "15" }, { text: "monitor" }],
+          [{ text: "ai" }, { text: "15" }, { text: "commissary" }],
+          [{ text: "ai" }, { text: "15" }, { text: "supervisor" }],
         ],
       },
     ],
-    [{ text: "2" }, { text: "小华" }, { text: "14" }, { text: "学习委员" }],
-    [{ text: "3" }, { text: "小爱" }, { text: "13" }, { text: "组长" }],
+    [{ text: "2" }, { text: "hua" }, { text: "14" }, { text: "commissary" }],
+    [{ text: "3" }, { text: "ai" }, { text: "13" }, { text: "supervisor" }],
   ] as Cell[][];
 
   const excel = new Excel();

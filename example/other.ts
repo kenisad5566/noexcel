@@ -9,34 +9,34 @@ async function exportFile() {
 
   const data = [
     [
-      { text: "序号" },
-      { text: "姓名" },
-      { text: "年龄" },
-      { text: "职位" },
-      { text: "入学时间" },
-      { text: "个人链接" },
+      { text: "s/n" },
+      { text: "name" },
+      { text: "age" },
+      { text: "position" },
+      { text: "date" },
+      { text: "link" },
     ],
     [
       { text: "1", style: { font: { bold: true } } },
-      { text: "小明" },
+      { text: "ming" },
       { text: 15, type: "number" },
-      { text: "班长" },
+      { text: "monitor" },
       { text: new Date(), type: "date", style: { numberFormat: "yyyy-mm-dd" } },
       { text: "http://www.google.com", type: "link" },
     ],
     [
       { text: "2" },
-      { text: "小华", style: { font: { size: 14 } } },
+      { text: "hua", style: { font: { size: 14 } } },
       { text: 14, type: "number" },
-      { text: "学习委员" },
+      { text: "commissary" },
       { text: new Date(), type: "date", style: { numberFormat: "yyyy-mm-dd" } },
       { text: "http://www.google.com", type: "string" },
     ],
     [
       { text: "3" },
-      { text: "小爱" },
+      { text: "ai" },
       { text: 13 },
-      { text: "组长" },
+      { text: "supervisor" },
       { text: new Date(), type: "date", style: { numberFormat: "yyyy-mm-dd" } },
       {
         text: "http://www.google.com",
@@ -46,9 +46,9 @@ async function exportFile() {
     ],
     [
       { text: "4" },
-      { text: "小屹" },
+      { text: "ai" },
       { text: 14 },
-      { text: "体育生" },
+      { text: "supervisor" },
       { text: new Date(), type: "date", style: { numberFormat: "yyyy-mm-dd" } },
       {
         text: "http://www.cnlogo8.com/d/file/2021-05-20/97517b732413c71921c3a55726f4f299.png",

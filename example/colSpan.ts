@@ -9,34 +9,34 @@ async function exportFile() {
 
   const data = [
     [
-      { text: "班级", colSpan: 2 },
-      { text: "姓名" },
-      { text: "年龄" },
-      { text: "职位" },
+      { text: "class", colSpan: 2 },
+      { text: "name" },
+      { text: "age" },
+      { text: "position" },
     ],
     [
       {
-        text: "一年级",
+        text: "class 1",
         colSpan: 2,
       },
-      { text: "小华" },
+      { text: "hua" },
       { text: "14" },
-      { text: "学习委员" },
+      { text: "commissary" },
     ],
     [
-      { text: "二年级", colSpan: 2 },
-      { text: "小华" },
+      { text: "class 2", colSpan: 2 },
+      { text: "hua" },
       { text: "14" },
-      { text: "学习委员" },
+      { text: "commissary" },
     ],
     [
       {
-        text: "三年级",
+        text: "class 3",
         colSpan: 2,
         rowSpan: 2,
         childCells: [
-          [{ text: "小爱" }, { text: "13" }, { text: "组长" }],
-          [{ text: "小黄" }, { text: "13" }, { text: "组长" }],
+          [{ text: "ai" }, { text: "13" }, { text: "supervisor" }],
+          [{ text: "ai" }, { text: "13" }, { text: "supervisor" }],
         ],
       },
     ],
