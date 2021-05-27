@@ -1,6 +1,6 @@
 {
   "name": "noexcel",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Node module to allow for easy Excel file creation without consideration of render detail",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -30,7 +30,9 @@
   },
   "keywords": [
     "node",
-    "excel"
+    "excel",
+    "xlsx",
+    "xls"
   ],
   "author": "kenisad5566",
   "license": "MIT",
