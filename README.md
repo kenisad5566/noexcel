@@ -1,4 +1,4 @@
-[NPM version: v1.0.1](https://www.npmjs.com/package/noexcel)
+[NPM version: v1.0.2](https://www.npmjs.com/package/noexcel)
 [License:MIT](https://opensource.org/licenses/MIT)
 
 # node-excel
