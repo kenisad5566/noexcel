@@ -10,6 +10,7 @@ With this module, you can export your excel easily only focus on your work and d
 ### Basic Usage
 
 A simple excel example like this
+
 ![image](https://github.com/kenisad5566/node-excel/blob/master/example/png/simple.png)
 
 ```javascript
@@ -53,6 +54,7 @@ await excel.saveFile()
 ### ColSpan
 
 A colspan excel example like this
+
 ![image](https://github.com/kenisad5566/node-excel/blob/master/example/png/colSpan.png)
 
 ```javascript
@@ -105,6 +107,7 @@ A colspan excel example like this
 ### RowSpan
 
 A rowspan excel example like this
+
 ![image](https://github.com/kenisad5566/node-excel/blob/master/example/png/rowSpan.png)
 
 ```javascript
@@ -143,6 +146,7 @@ A rowspan excel example like this
 ### Cell style
 
 Some other example with cell style like this
+
 ![image](https://github.com/kenisad5566/node-excel/blob/master/example/png/styles.png)
 
 ```javascript
