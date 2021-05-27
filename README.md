@@ -10,7 +10,7 @@ With this module, you can export your excel easily only focus on your work and d
 ### Basic Usage
 
 A simple excel example like this
-!(https://github.com/kenisad5566/node-excel/blob/master/example/png/simple.png)
+![image](https://github.com/kenisad5566/node-excel/blob/master/example/png/simple.png)
 
 ```javascript
 import Excel  from "node-excel";
