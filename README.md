@@ -1,5 +1,5 @@
-[![NPM version 1.0.1](https://www.npmjs.com/package/noexcel)
-[![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+[NPM version 1.0.1](https://www.npmjs.com/package/noexcel)
+[License](https://opensource.org/licenses/MIT)
 
 # node-excel
 
