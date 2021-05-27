@@ -19,12 +19,11 @@ A simple excel example like this
 ![image](https://github.com/kenisad5566/node-excel/blob/master/example/png/simple.png)
 
 ```javascript
-import Excel  from "node-excel";
-import {Cell}  from "node-excel/types";
+import {NoExcel, Cell} from "noexcel";
 const path = require("path");
 
 // Create a new Instance of NodeExcel class
-const excel = new Excel();
+const excel = new NoExcel();
 
 // Add a worksheet
 const sheetName1 = "sheet1";
@@ -63,7 +62,7 @@ A colspan excel example like this
 ![image](https://github.com/kenisad5566/node-excel/blob/master/example/png/colSpan.png)
 
 ```javascript
- const exportPath = path.join(__dirname, "../tmp");
+  const exportPath = path.join(__dirname, "../tmp");
   const fileName = "test";
   const sheetName = "student";
 
@@ -102,7 +101,7 @@ A colspan excel example like this
     ],
   ] as Cell[][];
 
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet(sheetName).setSavePath(exportPath).setFileName(fileName);
   await excel.render(data);
   await excel.saveFile();
@@ -142,7 +141,7 @@ A rowspan excel example like this
     [{ text: "3" }, { text: "ai" }, { text: "13" }, { text: "supervisor" }],
   ] as Cell[][];
 
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet(sheetName).setSavePath(exportPath).setFileName(fileName);
   await excel.render(data);
   await excel.saveFile();
@@ -209,7 +208,7 @@ Some other example with cell style like this
     ],
   ] as Cell[][];
 
-  const excel = new Excel();
+  const excel = new NoExcel();
   excel.addWorkSheet(sheetName).setSavePath(exportPath).setFileName(fileName);
   await excel.render(data);
   excel.setRowHeight(5, 300).setColWidth(6, 70);
