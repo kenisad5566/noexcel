@@ -5,7 +5,7 @@
 # node-excel
 
 A full featured xlsx file generation library allowing for the creation of advanced Excel files without consideration of cell detail.
-With this module, you can export your excel easily only focus on your work and data. [Some example](https://github.com/kenisad5566/node-excel/tree/master/example).
+With this module, it can export excel easily only focus on your work and data. [Some example](https://github.com/kenisad5566/node-excel/tree/master/example).
 
 ### Basic Usage
 
