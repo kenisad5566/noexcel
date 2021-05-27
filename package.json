@@ -1,6 +1,6 @@
 {
   "name": "noexcel",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Node module to allow for easy Excel file creation without consideration of render detail",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -11,7 +11,8 @@
   "scripts": {
     "dev": "ts-node ./src/index.ts",
     "build": "tsc",
-    "test": "./node_modules/.bin/mocha -r ./node_modules/ts-node/register test/**.test.ts"
+    "test": "./node_modules/.bin/mocha -r ./node_modules/ts-node/register test/**.test.ts",
+    "publish" :"npm run build && npm publish"
   },
   "husky": {
     "hooks": {
