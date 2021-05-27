@@ -7,6 +7,12 @@
 A full featured xlsx file generation library allowing for the creation of advanced Excel files without consideration of cell detail.
 With this module, it can export excel easily only focus on your work and data. [Some example](https://github.com/kenisad5566/node-excel/tree/master/example).
 
+### Quick start
+
+```javascript
+npm i noexcel
+```
+
 ### Basic Usage
 
 A simple excel example like this
