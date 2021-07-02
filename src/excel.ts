@@ -9,7 +9,7 @@ import {
   WorkSheetStyle,
 } from "./types";
 
-const xl = require("excel4node");
+const xl = require("./excel4node");
 const fs = require("fs");
 const path = require("path");
 

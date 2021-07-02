@@ -1,6 +1,6 @@
 {
   "name": "noexcel",
-  "version": "1.0.5",
+  "version": "1.0.8",
   "description": "Node module to allow for easy Excel file creation without consideration of render detail",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -10,9 +10,10 @@
   ],
   "scripts": {
     "dev": "ts-node ./src/index.ts",
-    "build": "tsc",
+    "build": "tsc && node copy.js",
     "test": "./node_modules/.bin/mocha -r ./node_modules/ts-node/register test/**.test.ts",
-    "publish" :"npm run build && npm publish"
+    "taobao":"npm config set registry http://registry.npm.taobao.org/",
+    "origin" :"npm config set registry http://registry.npmjs.org/"
   },
   "husky": {
     "hooks": {
@@ -57,7 +58,19 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "excel4node": "^1.7.2",
-    "node-xlsx": "^0.16.1"
+    "lodash": "^4.17.21",
+    "lodash.isundefined": "^3.0.1",
+    "node-xlsx": "^0.16.1",
+    "shelljs": "^0.8.4",
+    "deepmerge": "3.2.0",
+    "image-size": "0.7.2",
+    "jszip": "3.2.1",
+    "lodash.get": "4.4.2",
+    "lodash.isequal": "4.5.0",
+    "lodash.reduce": "4.6.0",
+    "lodash.uniqueid": "4.0.1",
+    "mime": "2.4.0",
+    "uuid": "3.3.2",
+    "xmlbuilder": "11.0.1"
   }
 }
