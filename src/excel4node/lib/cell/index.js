@@ -239,12 +239,12 @@ function mergeCells(cellBlock) {
         var cellRange = excelRefs[0] + ':' + excelRefs[excelRefs.length - 1];
         var rangeCells = excelRefs;
 
-
         let okToMerge = true;
          for (let site of rangeCells) {
              if (cellBlock.ws.mergedSites[site]) {
                     okToMerge = false;
                     cellBlock.ws.wb.logger.error(`Invalid Range for: ${cellRange}. Some cells in this range are already included in another merged cell range: ${cr}.`);
+                    break
                 }
             }
 

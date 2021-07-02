@@ -7,7 +7,7 @@ const data: Cell[][] = [];
 
 const cell = {
   text: "sdfafawerfaweeawerawerwerwerw啥打法鸡撒代付款佳恩阿斯蒂芬",
-  rowSpan: 2,
+  rowSpan: 3,
   colSpan: 2,
 };
 
